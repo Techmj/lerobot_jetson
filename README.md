@@ -229,6 +229,51 @@ python -c "import serial; print(serial.Serial('/dev/ttyACM1'))"
 - Ensure you moved through the **full range** during calibration
 - Check for loose USB connections
 
+### 6. Camera FPS Issues (OpenCV)
+
+**Problem:** Camera only achieves 5 fps instead of requested 30 fps
+
+**Solution:**
+
+If your camera supports MJPG (Motion-JPEG) encoding, specify it in the camera config:
+
+```bash
+lerobot-teleoperate \
+    --robot.type=so101_follower \
+    --robot.port=/dev/ttyACM1 \
+    --robot.id=my_awesome_follower_arm \
+    --robot.cameras="{ front: {type: opencv, index_or_path: 0, width: 1920, height: 1080, fps: 30, fourcc: 'MJPG'}}" \
+    --teleop.type=so101_leader \
+    --teleop.port=/dev/ttyACM0 \
+    --teleop.id=my_awesome_leader_arm \
+    --display_data=true
+```
+
+**Check your camera's supported formats:**
+```bash
+v4l2-ctl --device=/dev/video0 --list-formats-ext
+```
+
+Look for `'MJPG'` (Motion-JPEG) entries which typically support higher fps at full resolution. YUYV format is slower and often limited to 5 fps at 1080p.
+
+**Example camera capabilities (USB2.0_CAM1):**
+
+| Format | Resolution | Supported FPS |
+|--------|-----------|---|
+| **MJPG** | 1920x1080 | ✅ 30, 25, 20, 15, 10, 5 fps |
+| **MJPG** | 1440x1080 | ✅ 30, 20, 15, 10, 5 fps |
+| **MJPG** | 1280x960 | ✅ 30, 20, 15, 10, 5 fps |
+| **MJPG** | 1280x720 | ✅ 30, 20, 15, 10, 5 fps |
+| **MJPG** | 800x600 | ✅ 30, 25, 20, 15, 10, 5 fps |
+| **MJPG** | 640x480 | ✅ 30, 25, 20, 15, 10, 5 fps |
+| YUYV | 1920x1080 | ❌ 5 fps only |
+| YUYV | 1280x720 | 10, 5 fps |
+| YUYV | 640x480 | ✅ 30, 25, 20, 15, 10, 5 fps |
+
+**Recommended configurations:**
+- Full HD: `width: 1920, height: 1080, fps: 30, fourcc: 'MJPG'`
+- High speed lower res: `width: 640, height: 480, fps: 30, fourcc: 'MJPG'` (works with both MJPG and YUYV)
+
 ---
 
 ## File Locations
