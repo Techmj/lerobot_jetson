@@ -42,7 +42,7 @@ Before starting, ensure you have:
 │                                                              │
 │  LEADER ARM                          FOLLOWER ARM           │
 │  ├─ Type: so101_leader               ├─ Type: so101_follower│
-│  ├─ Port: /dev/ttyACM0               ├─ Port: /dev/ttyACM1  │
+│  ├─ Port: /dev/ttyACM1               ├─ Port: /dev/ttyACM0  │
 │  ├─ ID: my_awesome_leader_arm        ├─ ID: my_awesome_...  │
 │  └─ Role: Controller (Input)         └─ Role: Actuator      │
 │                                                              │
@@ -55,8 +55,8 @@ Before starting, ensure you have:
 
 | Arm      | Type              | USB Port         | Unique ID                  |
 |----------|-------------------|------------------|----------------------------|
-| Leader   | `so101_leader`    | `/dev/ttyACM0`   | `my_awesome_leader_arm`    |
-| Follower | `so101_follower`  | `/dev/ttyACM1`   | `my_awesome_follower_arm`  |
+| Leader   | `so101_leader`    | `/dev/ttyACM1`   | `my_awesome_leader_arm`    |
+| Follower | `so101_follower`  | `/dev/ttyACM0`   | `my_awesome_follower_arm`  |
 
 ---
 
@@ -66,13 +66,13 @@ Before starting, ensure you have:
 
 ### Leader Arm Calibration
 
-1. **Connect** the leader arm to `/dev/ttyACM0`
+1. **Connect** the leader arm to `/dev/ttyACM1`
 
 2. **Run calibration command:**
    ```bash
    lerobot-calibrate \
        --teleop.type=so101_leader \
-       --teleop.port=/dev/ttyACM0 \
+       --teleop.port=/dev/ttyACM1 \
        --teleop.id=my_awesome_leader_arm
    ```
 
@@ -90,13 +90,13 @@ Before starting, ensure you have:
 
 ### Follower Arm Calibration
 
-1. **Connect** the follower arm to `/dev/ttyACM1`
+1. **Connect** the follower arm to `/dev/ttyACM0`
 
 2. **Run calibration command:**
    ```bash
    lerobot-calibrate \
        --robot.type=so101_follower \
-       --robot.port=/dev/ttyACM1 \
+       --robot.port=/dev/ttyACM0 \
        --robot.id=my_awesome_follower_arm
    ```
 
@@ -121,10 +121,10 @@ Once both arms are calibrated, start teleoperation:
 ```bash
 lerobot-teleoperate \
     --robot.type=so101_follower \
-    --robot.port=/dev/ttyACM1 \
+    --robot.port=/dev/ttyACM0 \
     --robot.id=my_awesome_follower_arm \
     --teleop.type=so101_leader \
-    --teleop.port=/dev/ttyACM0 \
+    --teleop.port=/dev/ttyACM1 \
     --teleop.id=my_awesome_leader_arm
 ```
 
@@ -139,10 +139,10 @@ lerobot-teleoperate \
 | Parameter           | Value                      | Description                          |
 |---------------------|----------------------------|--------------------------------------|
 | `--robot.type`      | `so101_follower`           | Arm that will be controlled          |
-| `--robot.port`      | `/dev/ttyACM1`             | Follower's USB port                  |
+| `--robot.port`      | `/dev/ttyACM0`             | Follower's USB port                  |
 | `--robot.id`        | `my_awesome_follower_arm`  | Follower's calibration ID            |
 | `--teleop.type`     | `so101_leader`             | Arm used as controller               |
-| `--teleop.port`     | `/dev/ttyACM0`             | Leader's USB port                    |
+| `--teleop.port`     | `/dev/ttyACM1`             | Leader's USB port                    |
 | `--teleop.id`       | `my_awesome_leader_arm`    | Leader's calibration ID              |
 
 ---
@@ -218,8 +218,8 @@ ls ~/.cache/huggingface/lerobot/calibration/teleoperators/so_leader/
 ls ~/.cache/huggingface/lerobot/calibration/robots/so_follower/
 
 # 2. Test ports individually
-python -c "import serial; print(serial.Serial('/dev/ttyACM0'))"
 python -c "import serial; print(serial.Serial('/dev/ttyACM1'))"
+python -c "import serial; print(serial.Serial('/dev/ttyACM0'))"
 ```
 
 ### 5. Arm Moves Erratically
@@ -240,11 +240,11 @@ If your camera supports MJPG (Motion-JPEG) encoding, specify it in the camera co
 ```bash
 lerobot-teleoperate \
     --robot.type=so101_follower \
-    --robot.port=/dev/ttyACM1 \
+    --robot.port=/dev/ttyACM0 \
     --robot.id=my_awesome_follower_arm \
     --robot.cameras="{ front: {type: opencv, index_or_path: 0, width: 1920, height: 1080, fps: 30, fourcc: 'MJPG'}}" \
     --teleop.type=so101_leader \
-    --teleop.port=/dev/ttyACM0 \
+    --teleop.port=/dev/ttyACM1 \
     --teleop.id=my_awesome_leader_arm \
     --display_data=true
 ```
@@ -317,22 +317,22 @@ Each calibration file contains:
 # 1. Calibrate leader arm
 lerobot-calibrate \
     --teleop.type=so101_leader \
-    --teleop.port=/dev/ttyACM0 \
+    --teleop.port=/dev/ttyACM1 \
     --teleop.id=my_awesome_leader_arm
 
 # 2. Calibrate follower arm
 lerobot-calibrate \
     --robot.type=so101_follower \
-    --robot.port=/dev/ttyACM1 \
+    --robot.port=/dev/ttyACM0 \
     --robot.id=my_awesome_follower_arm
 
 # 3. Start teleoperation
 lerobot-teleoperate \
     --robot.type=so101_follower \
-    --robot.port=/dev/ttyACM1 \
+    --robot.port=/dev/ttyACM0 \
     --robot.id=my_awesome_follower_arm \
     --teleop.type=so101_leader \
-    --teleop.port=/dev/ttyACM0 \
+    --teleop.port=/dev/ttyACM1 \
     --teleop.id=my_awesome_leader_arm
 ```
 
